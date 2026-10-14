@@ -1,0 +1,42 @@
+{
+ "skill_name": "designing-slo-alerting",
+ "evals": [
+  {
+   "id": 1,
+   "prompt": "Our checkout API exposes `http_requests_total{code=...}`. Design a 99.9% availability SLO with Prometheus alerts.",
+   "expected_output": "burn-rate-alerts-for-api",
+   "files": [],
+   "expectations": [
+    "Error budget 0.1% / 0.001 stated",
+    "Uses burn rates 14.4 and 6",
+    "Uses multi-window (long and short window both required)",
+    "Includes a ticket-level slow burn (1x / 3d)",
+    "Tells the user to confirm the metric/labels exist before shipping"
+   ]
+  },
+  {
+   "id": 2,
+   "prompt": "We get way too many pages. Here is the current list: fixtures/slo/alerts.txt. What should we change?",
+   "expected_output": "cut-alert-noise",
+   "files": [],
+   "expectations": [
+    "Keeps/promotes the symptom alert (HighErrorRate)",
+    "Moves cause alerts (CPU/restarts/disk) off paging to dashboards or tickets",
+    "Requires runbook and owner for every page",
+    "Says to measure pages before/after rather than claiming a reduction",
+    "Does not invent a percentage reduction"
+   ]
+  },
+  {
+   "id": 3,
+   "prompt": "We have a nightly data pipeline that must finish before 07:00. What SLI/SLO should we use?",
+   "expected_output": "slo-for-nightly-pipeline",
+   "files": [],
+   "expectations": [
+    "Uses freshness / on-time completion as the SLI",
+    "Expresses SLI as a ratio of good to valid runs",
+    "Says to measure current performance before fixing the SLO number"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: payments
+  namespace: argocd
+  finalizers: [resources-finalizer.argocd.argoproj.io]
+spec:
+  project: default
+  source:
+    repoURL: https://user:PLACEHOLDER@github.com/acme/payments-config.git
+    path: overlays/prod
+    targetRevision: main
+  destination: {server: https://kubernetes.default.svc, namespace: payments}
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}
+    syncOptions: [Replace=true]
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: {name: ingress-nginx, namespace: argocd}
+spec:
+  project: platform
+  source:
+    repoURL: https://kubernetes.github.io/ingress-nginx
+    chart: ingress-nginx
+    targetRevision: "*"
+  destination: {server: https://kubernetes.default.svc, namespace: ingress}

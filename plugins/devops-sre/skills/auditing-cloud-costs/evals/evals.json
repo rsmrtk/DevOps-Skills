@@ -1,0 +1,84 @@
+{
+ "skill_name": "auditing-cloud-costs",
+ "evals": [
+  {
+   "id": 1,
+   "prompt": "My GCP bill came in at $87 but I only know about one small VM in project app-a. What do I do first? (This is a scenario: answer with the commands you would run, do not run them.)",
+   "expected_output": "surprise-87-dollar-bill",
+   "files": [],
+   "expectations": [
+    "Enumerates ALL projects, not just app-a",
+    "Lists compute instances, disks and addresses",
+    "Checks how long machines ran via lastStart/lastStopTimestamp",
+    "Does not promise savings before the inventory"
+   ]
+  },
+  {
+   "id": 2,
+   "prompt": "I deleted an expensive VM on the 30th. Will this month's bill go down?",
+   "expected_output": "delete-on-the-30th",
+   "files": [],
+   "expectations": [
+    "Says the invoice is after the fact / already incurred cost stays"
+   ]
+  },
+  {
+   "id": 3,
+   "prompt": "Our Azure VMs show 'Stopped' in the portal. Are we still paying for them?",
+   "expected_output": "azure-stopped-vms",
+   "files": [],
+   "expectations": [
+    "Says stopped VMs still pay for compute",
+    "Says deallocated is the state that stops compute billing"
+   ]
+  },
+  {
+   "id": 4,
+   "prompt": "Our AWS bill jumped and Cost Explorer shows NAT Gateway data processing as the top item, mostly from private subnets pulling from S3 and ECR. What do we change? (This is a scenario: answer with the plan, do not run anything.)",
+   "expected_output": "aws-nat-gateway",
+   "files": [],
+   "expectations": [
+    "Recommends a gateway VPC endpoint for S3 (free) and a way to avoid NAT for ECR/API traffic",
+    "Says to verify with cost grouped by usage type before and after",
+    "Does not quote a savings figure without data"
+   ]
+  },
+  {
+   "id": 5,
+   "prompt": "We want to buy a 3-year Compute Savings Plan sized to our average EC2 usage over the last week to maximize discount. Good idea?",
+   "expected_output": "savings-plan-sizing",
+   "files": [],
+   "expectations": [
+    "Says to size the commitment to the always-on minimum, not the average",
+    "Says one week is too short a window",
+    "Recommends cleaning up and rightsizing before committing",
+    "Suggests layering purchases or a shorter term",
+    "Says the purchase needs owner approval"
+   ]
+  },
+  {
+   "id": 6,
+   "prompt": "Our Kubernetes cluster costs too much. How do we cut it without hurting production performance?",
+   "expected_output": "k8s-save-without-hurting",
+   "files": [],
+   "expectations": [
+    "Starts from measurement (usage vs requests over a long enough window)",
+    "Orders levers from safe (orphans, schedules) to riskier (rightsizing, Spot)",
+    "Mentions PodDisruptionBudgets or safe consolidation",
+    "Ties changes to an SLO or watch metric with a rollback",
+    "Says not to lower memory for OOMKilled pods"
+   ]
+  },
+  {
+   "id": 7,
+   "prompt": "Our BigQuery bill is high and we use on-demand pricing. What should we check and change?",
+   "expected_output": "gcp-bigquery",
+   "files": [],
+   "expectations": [
+    "Mentions partitioning/clustering and avoiding SELECT *",
+    "Mentions dry run or maximum_bytes_billed",
+    "Mentions comparing on-demand with capacity/editions pricing"
+   ]
+  }
+ ]
+}

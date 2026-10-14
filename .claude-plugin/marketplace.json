@@ -1,0 +1,14 @@
+{
+  "name": "devops-sre-skills",
+  "description": "DevOps/SRE skills and agent for Claude Code",
+  "owner": {
+    "name": "Rostyslav Martyniuk"
+  },
+  "plugins": [
+    {
+      "name": "devops-sre",
+      "source": "./plugins/devops-sre",
+      "description": "11 skills and a read-only-by-default DevOps/SRE agent: Terraform, GitHub Actions, SLOs, cloud IAM, GitOps, FinOps (with billing-export analyzer), networking, Kubernetes, postmortems."
+    }
+  ]
+}

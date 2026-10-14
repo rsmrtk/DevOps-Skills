@@ -1,0 +1,38 @@
+{
+ "skill_name": "troubleshooting-kubernetes",
+ "evals": [
+  {
+   "id": 1,
+   "prompt": "Pod api-7d9 shows Last State: Terminated, Reason: OOMKilled, Exit Code: 137. Limits: memory 256Mi, requests 128Mi. `kubectl top pod` says 251Mi. It's using a lot of memory — can we lower the limit to 192Mi to save cost?",
+   "expected_output": "oomkilled-reduce-limit",
+   "files": [],
+   "expectations": [
+    "Says OOMKilled means memory is under-provisioned (or a leak)",
+    "Advises against lowering the limit",
+    "Suggests checking the usage trend over time"
+   ]
+  },
+  {
+   "id": 2,
+   "prompt": "A pod stays Pending. `kubectl describe pod` Events: `FailedScheduling: 0/3 nodes are available: 3 Insufficient cpu.` The pod requests 8 CPU. What do I check and do?",
+   "expected_output": "pending-pod-insufficient-cpu",
+   "files": [],
+   "expectations": [
+    "Reads the event as insufficient CPU on all nodes",
+    "Compares the request against node allocatable",
+    "Offers options (lower request, bigger nodes, or autoscaler)"
+   ]
+  },
+  {
+   "id": 3,
+   "prompt": "I have 10 minutes of metrics for deployment api: p95 CPU is 40m against a request of 500m. Should I cut the request to 100m?",
+   "expected_output": "rightsize-on-ten-minutes",
+   "files": [],
+   "expectations": [
+    "Refuses/hedges because the window is too short",
+    "Mentions needing a window with normal peaks (days/weeks)",
+    "Mentions memory as well or coverage"
+   ]
+  }
+ ]
+}

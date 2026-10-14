@@ -1,0 +1,105 @@
+{
+ "skill_name": "operating-gitops",
+ "evals": [
+  {
+   "id": 1,
+   "prompt": "Our Argo CD app 'checkout' is permanently OutOfSync. The diff shows spec.replicas is 3 in Git but 7 live, and an HPA exists. What's going on and what do we change? (Scenario: answer with the reasoning and commands, do not run anything.)",
+   "expected_output": "argocd-outofsync-hpa",
+   "files": [],
+   "expectations": [
+    "Identifies the HPA as owner of replicas so Argo sees drift",
+    "Recommends removing replicas from the manifest or a narrow ignoreDifferences on /spec/replicas",
+    "Mentions RespectIgnoreDifferences or that sync must not overwrite the ignored field",
+    "Does not recommend ignoring the whole Deployment or disabling sync as the fix"
+   ]
+  },
+  {
+   "id": 2,
+   "prompt": "I removed the old 'postgres' StatefulSet manifest from our Git repo to tidy up. Prod Argo CD has automated sync with prune on. Anything I should worry about before merging?",
+   "expected_output": "prune-deletes-pvc",
+   "files": [],
+   "expectations": [
+    "Says prune will delete the live StatefulSet",
+    "Warns about PVCs / data loss and recommends Prune=false protection or a backup first",
+    "Suggests previewing the diff or rendering before merge",
+    "Recommends review and approval for the deletion in prod"
+   ]
+  },
+  {
+   "id": 3,
+   "prompt": "Prod is down because of a bad config value and the Flux Kustomization will revert any kubectl fix within 5 minutes. What's the correct emergency procedure?",
+   "expected_output": "break-glass",
+   "files": [],
+   "expectations": [
+    "Says to suspend the Flux Kustomization (or disable auto-sync) before the manual fix",
+    "Says to commit the same fix to Git",
+    "Says to resume reconciliation afterwards",
+    "Prefers git revert as the cleanest fix when possible",
+    "Does not recommend leaving it suspended or only patching live"
+   ]
+  },
+  {
+   "id": 4,
+   "prompt": "We committed a Kubernetes Secret manifest with base64 values to our GitOps repo last month. A teammate says base64 is fine since the repo is private. Thoughts and next steps?",
+   "expected_output": "secrets-in-git",
+   "files": [],
+   "expectations": [
+    "Says base64 is encoding, not encryption",
+    "Says to rotate the secret since it is in Git history",
+    "Recommends SOPS, Sealed Secrets or External Secrets Operator",
+    "Notes that rewriting history alone does not un-leak the secret"
+   ]
+  },
+  {
+   "id": 5,
+   "prompt": "Flux shows our 'apps' Kustomization as 'dependency infra is not ready' and nothing has been deployed for an hour. How do we debug it?",
+   "expected_output": "flux-dependency-not-ready",
+   "files": [],
+   "expectations": [
+    "Says to inspect the dependsOn target (infra) and fix it first",
+    "Uses flux get kustomizations / describe / events or logs to find the reason",
+    "Mentions checking the source (GitRepository) and suspend state",
+    "Does not recommend removing dependsOn as the first step"
+   ]
+  },
+  {
+   "id": 6,
+   "prompt": "We deployed a bad release with Argo CD. What's the right way to roll back in a GitOps setup, and what are the catches with 'argocd app rollback'?",
+   "expected_output": "rollback",
+   "files": [],
+   "expectations": [
+    "Recommends git revert so Git stays the source of truth",
+    "Says argocd app rollback requires auto-sync to be disabled",
+    "Says rollback via the CLI leaves Git out of sync with the cluster / will be reverted when auto-sync resumes"
+   ]
+  },
+  {
+   "id": 7,
+   "prompt": "Review this GitOps repo for risks before we onboard production. (Scenario: the repo is at evals/fixtures/repo; its relevant contents: an Argo Application using project default with repoURL containing user:PLACEHOLDER@ credentials, prune+selfHeal and Replace=true; an ingress-nginx chart with targetRevision '*'; a Deployment using image ghcr.io/acme/api:latest and a busybox sidecar with no tag; a plaintext Secret with stringData password; kustomization with commonLabels and an unpinned remote base github.com/acme/shared-base; a Flux HelmRelease with version '>=18.0.0'; a Flux Kustomization with prune and force: true.)",
+   "expected_output": "review-repo",
+   "files": [],
+   "expectations": [
+    "Flags the plaintext Secret and says to rotate it",
+    "Flags credentials embedded in the repoURL",
+    "Flags the :latest / untagged images",
+    "Flags unpinned chart versions (* and >=)",
+    "Flags the default AppProject",
+    "Flags Replace=true and force: true as downtime risks",
+    "Flags commonLabels changing immutable selectors",
+    "Flags the remote base without a pinned ref"
+   ]
+  },
+  {
+   "id": 8,
+   "prompt": "How should we promote a release from staging to prod in a GitOps setup? We currently have a long-lived 'prod' branch and a 'staging' branch.",
+   "expected_output": "promotion",
+   "files": [],
+   "expectations": [
+    "Recommends directories/overlays per environment instead of long-lived environment branches",
+    "Says to promote the same immutable artifact (tag or digest), not rebuild",
+    "Says prod change goes through a reviewed PR",
+    "Warns against mutable tags like latest"
+   ]
+  }
+ ]
+}

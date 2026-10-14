@@ -1,0 +1,39 @@
+{
+ "skill_name": "diagnosing-network-issues",
+ "evals": [
+  {
+   "id": 1,
+   "prompt": "From my VM: `dig +short api.internal.example.com` -> 10.20.4.15. `nc -zv 10.20.4.15 443` hangs and ends with 'timed out'. `ping` gets no reply. The same nc works from another VM in the same subnet. What's wrong?",
+   "expected_output": "timeout-not-dns",
+   "files": [],
+   "expectations": [
+    "Rules out DNS as the cause",
+    "Distinguishes timeout (dropped) from refused",
+    "Points to firewall / security group / NACL / route as the likely layer",
+    "Notes it works from another VM, so the rule is source-specific"
+   ]
+  },
+  {
+   "id": 2,
+   "prompt": "openssl s_client to our host prints `Verify return code: 21 (unable to verify the first certificate)`, only one certificate (depth 0) in the chain, and notAfter is next year. Browsers on some phones fail. Why?",
+   "expected_output": "tls-unable-to-verify",
+   "files": [],
+   "expectations": [
+    "Identifies a missing intermediate / incomplete chain",
+    "Says it is not an expiry problem",
+    "Recommends serving the full chain / fullchain"
+   ]
+  },
+  {
+   "id": 3,
+   "prompt": "In Kubernetes a pod can't reach service `web` in namespace shop (curl times out). `kubectl get endpoints web -n shop` shows `web   <none>`. The service selector is `app=web` and the pods are labelled `app=webapp`. What's wrong?",
+   "expected_output": "k8s-service-no-endpoints",
+   "files": [],
+   "expectations": [
+    "Identifies the selector/label mismatch",
+    "Says empty endpoints means it is not a network or DNS problem",
+    "Gives the fix (change selector or labels)"
+   ]
+  }
+ ]
+}

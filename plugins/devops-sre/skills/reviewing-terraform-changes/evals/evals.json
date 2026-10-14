@@ -1,0 +1,40 @@
+{
+ "skill_name": "reviewing-terraform-changes",
+ "evals": [
+  {
+   "id": 1,
+   "prompt": "Please review this Terraform plan for prod and tell me if I can apply it. Human-readable plan: fixtures/tf/plan.txt  JSON plan: fixtures/tf/plan.json",
+   "expected_output": "review-plan-with-db-replacement",
+   "files": [],
+   "expectations": [
+    "Flags aws_db_instance.main as a replacement/destroy",
+    "Names `identifier` as the attribute forcing replacement",
+    "Flags the S3 logs bucket destroy",
+    "Verdict is blocked / not safe to apply as-is",
+    "Mentions a backup/snapshot before touching the database"
+   ]
+  },
+  {
+   "id": 2,
+   "prompt": "In our Terraform code I want to rename `aws_instance.web` to `aws_instance.app` without destroying the server. What's the right way?",
+   "expected_output": "rename-resource-without-recreate",
+   "files": [],
+   "expectations": [
+    "Recommends a `moved` block",
+    "Says the plan should show no changes/destroy after the move",
+    "Does not recommend `state rm` as the rename method"
+   ]
+  },
+  {
+   "id": 3,
+   "prompt": "A teammate says to run `terraform state rm aws_db_instance.main` to fix an error. Does that delete the production database?",
+   "expected_output": "state-rm-does-it-delete",
+   "files": [],
+   "expectations": [
+    "Says state rm does NOT destroy the real resource",
+    "Explains the resource becomes unmanaged",
+    "Recommends backing up state first"
+   ]
+  }
+ ]
+}

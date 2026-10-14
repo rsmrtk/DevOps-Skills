@@ -1,0 +1,111 @@
+{
+ "skill_name": "reviewing-cloud-iam",
+ "evals": [
+  {
+   "id": 1,
+   "prompt": "Our CI deploy role has this policy. Is it OK? {\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"iam:PassRole\",\"ecs:RunTask\",\"ecs:UpdateService\",\"ecr:*\"],\"Resource\":\"*\"}]} (Review the text only, do not run anything.)",
+   "expected_output": "pass-role-wildcard",
+   "files": [],
+   "expectations": [
+    "Flags iam:PassRole on Resource * as a privilege-escalation risk",
+    "Explains the chain: PassRole plus ecs:RunTask lets it run a task as any role",
+    "Recommends restricting PassRole to specific role ARNs and iam:PassedToService",
+    "Recommends scoping ecr:* and the other resources instead of *"
+   ]
+  },
+  {
+   "id": 2,
+   "prompt": "Review this IAM role trust policy for GitHub Actions: {\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::111122223333:oidc-provider/token.actions.githubusercontent.com\"},\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Condition\":{\"StringLike\":{\"token.actions.githubusercontent.com:sub\":\"repo:acme/*\"}}}]} The role has AdministratorAccess because 'it is only for deploys'.",
+   "expected_output": "github-oidc-trust",
+   "files": [],
+   "expectations": [
+    "Flags that repo:acme/* lets any repository in the org assume the role",
+    "Recommends pinning sub to the specific repo and branch or environment",
+    "Notes the missing aud condition (sts.amazonaws.com)",
+    "Flags AdministratorAccess as too broad and recommends scoped permissions or separate plan/apply roles"
+   ]
+  },
+  {
+   "id": 3,
+   "prompt": "A vendor asked us to create a role they can assume. Their AWS account is 999988887777. We wrote Principal {\"AWS\":\"arn:aws:iam::999988887777:root\"} with sts:AssumeRole and attached ReadOnlyAccess. Anything missing?",
+   "expected_output": "cross-account-trust",
+   "files": [],
+   "expectations": [
+    "Recommends an ExternalId condition to prevent the confused deputy problem",
+    "Notes that root principal trusts every principal in that account that is allowed to assume roles",
+    "Suggests limiting to specific vendor role or using least privilege instead of ReadOnlyAccess",
+    "Suggests session duration limits, logging or monitoring of AssumeRole"
+   ]
+  },
+  {
+   "id": 4,
+   "prompt": "A role in account A has s3:GetObject allowed on a bucket in account B, but gets AccessDenied. The bucket policy in B does not mention the role. Why?",
+   "expected_output": "cross-account-eval",
+   "files": [],
+   "expectations": [
+    "Says cross-account access needs an Allow on both sides: identity policy in A and bucket policy in B",
+    "Says the bucket policy in B must allow the principal",
+    "Mentions other possible causes: explicit deny, SCP, permission boundary, KMS key policy or Block Public Access"
+   ]
+  },
+  {
+   "id": 5,
+   "prompt": "Reviewer said this statement is dangerous but it only has a Deny-ish feel: {\"Effect\":\"Allow\",\"NotAction\":[\"iam:*\",\"organizations:*\"],\"Resource\":\"*\"}. Why is it dangerous?",
+   "expected_output": "notaction",
+   "files": [],
+   "expectations": [
+    "Explains that Allow with NotAction allows everything except the listed actions",
+    "Notes it includes future AWS actions and nearly all services (effectively near-admin)",
+    "Recommends listing the allowed actions explicitly or using an SCP/Deny for guardrails"
+   ]
+  },
+  {
+   "id": 6,
+   "prompt": "Our developers use AdministratorAccess in the dev account 'to move fast'. How do we get to least privilege without breaking people?",
+   "expected_output": "least-privilege-process",
+   "files": [],
+   "expectations": [
+    "Recommends measuring real usage with Access Analyzer or CloudTrail-generated policies or Access Advisor",
+    "Recommends iterating: start from observed use, test with simulation, monitor AccessDenied, keep rollback",
+    "Suggests guardrails like permission boundaries or SCPs, and separate break-glass or time-bound elevation",
+    "Does not recommend removing admin immediately in one step"
+   ]
+  },
+  {
+   "id": 7,
+   "prompt": "We run workloads on GCP and CI deploys using a downloaded service account JSON key stored in GitHub secrets, with roles/editor on the project. What would you change?",
+   "expected_output": "gcp-service-account-keys",
+   "files": [],
+   "expectations": [
+    "Recommends Workload Identity Federation instead of a downloaded key",
+    "Recommends replacing roles/editor with predefined or custom least-privilege roles",
+    "Mentions iam.serviceAccounts.actAs or token creator as escalation to watch",
+    "Recommends disabling or auditing user-managed service account keys (org policy)"
+   ]
+  },
+  {
+   "id": 8,
+   "prompt": "Our Azure pipeline service principal has Owner at the subscription scope and a client secret that never expires. Risks and fix?",
+   "expected_output": "azure-owner",
+   "files": [],
+   "expectations": [
+    "Flags Owner at subscription as able to grant any access (role assignment) and too broad",
+    "Recommends least-privilege role at a narrower scope, such as Contributor on a resource group",
+    "Recommends managed identity or workload identity federation instead of a long-lived client secret",
+    "Mentions secret expiry/rotation or credential inventory"
+   ]
+  },
+  {
+   "id": 9,
+   "prompt": "Review these policies before we use them in production: statement 1 allows Action * on Resource *; statement 2 allows iam:CreatePolicyVersion and iam:AttachRolePolicy on *; statement 3 is a bucket policy with Principal * and s3:GetObject without conditions; statement 4 is an SNS service-principal resource policy without aws:SourceArn. (Text only.)",
+   "expected_output": "lint-review",
+   "files": [],
+   "expectations": [
+    "Flags Action * on Resource * as full admin",
+    "Flags CreatePolicyVersion and AttachRolePolicy on * as privilege escalation",
+    "Flags Principal * without conditions as public access needing justification",
+    "Flags missing aws:SourceArn/SourceAccount as confused deputy risk"
+   ]
+  }
+ ]
+}

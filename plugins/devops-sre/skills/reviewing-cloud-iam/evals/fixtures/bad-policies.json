@@ -1,0 +1,21 @@
+[
+ {"Version":"2012-10-17","Statement":[
+  {"Sid":"DevAll","Effect":"Allow","Action":"*","Resource":"*"},
+  {"Sid":"S3Wide","Effect":"Allow","Action":"s3:*","Resource":"*"}]},
+ {"Version":"2012-10-17","Statement":[
+  {"Sid":"Deployer","Effect":"Allow","Action":["iam:PassRole","lambda:UpdateFunctionCode","ec2:RunInstances"],"Resource":"*"},
+  {"Sid":"Policies","Effect":"Allow","Action":["iam:CreatePolicyVersion","iam:AttachRolePolicy"],"Resource":"*"}]},
+ {"Version":"2012-10-17","Statement":[
+  {"Sid":"AllButIam","Effect":"Allow","NotAction":"iam:*","Resource":"*"}]},
+ {"Version":"2012-10-17","Statement":[
+  {"Effect":"Allow","Principal":{"Federated":"arn:aws:iam::111122223333:oidc-provider/token.actions.githubusercontent.com"},"Action":"sts:AssumeRoleWithWebIdentity","Condition":{"StringLike":{"token.actions.githubusercontent.com:sub":"repo:acme/*"}}}]},
+ {"Version":"2012-10-17","Statement":[
+  {"Effect":"Allow","Principal":{"Federated":"arn:aws:iam::111122223333:oidc-provider/token.actions.githubusercontent.com"},"Action":"sts:AssumeRoleWithWebIdentity"}]},
+ {"Version":"2012-10-17","Statement":[
+  {"Effect":"Allow","Principal":{"AWS":"arn:aws:iam::999988887777:root"},"Action":"sts:AssumeRole"}]},
+ {"Version":"2012-10-17","Statement":[
+  {"Effect":"Allow","Principal":"*","Action":"s3:GetObject","Resource":"arn:aws:s3:::acme-data/*"}]},
+ {"Version":"2012-10-17","Statement":[
+  {"Effect":"Allow","Principal":{"Service":"sns.amazonaws.com"},"Action":"sqs:SendMessage","Resource":"arn:aws:sqs:eu-west-1:111122223333:q"}]},
+ {"Statement":[{"Effect":"Allow","Action":["ec2:Describe*","logs:*"],"Resource":"*"}]}
+]

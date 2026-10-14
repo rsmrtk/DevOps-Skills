@@ -1,0 +1,10 @@
+{
+  "name": "devops-sre",
+  "description": "Skills and a read-only-by-default agent for DevOps/SRE work: Terraform review, CI/CD hardening, SLO alerting, cloud IAM review, GitOps (Argo CD/Flux), FinOps, billing-export analysis, networking, Kubernetes troubleshooting, postmortems, Patroni/Consul HA.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Rostyslav Martyniuk"
+  },
+  "license": "MIT",
+  "keywords": ["devops", "sre", "terraform", "kubernetes", "finops", "ci-cd", "observability"]
+}

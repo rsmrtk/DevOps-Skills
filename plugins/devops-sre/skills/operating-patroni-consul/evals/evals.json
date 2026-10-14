@@ -1,0 +1,41 @@
+{
+ "skill_name": "operating-patroni-consul",
+ "evals": [
+  {
+   "id": 1,
+   "prompt": "Our Patroni primary suddenly became a replica and the app can't write. Patroni log says `DCS is not accessible`. Consul is our DCS. What do we do? Should I just promote pg1 manually?",
+   "expected_output": "primary-demoted-dcs-down",
+   "files": [],
+   "expectations": [
+    "Says do not promote manually / check DCS quorum first",
+    "Checks Consul quorum with raft list-peers or equivalent",
+    "Explains demotion is by design to avoid split-brain",
+    "Mentions ACL/network as other causes of DCS inaccessibility"
+   ]
+  },
+  {
+   "id": 2,
+   "prompt": "Failover after a hard kill of the primary takes about 25 seconds. We want it faster. Can we set ttl to 5 and loop_wait to 5?",
+   "expected_output": "lower-ttl-to-speed-failover",
+   "files": [],
+   "expectations": [
+    "Explains ttl is the max time to detect a dead primary",
+    "States the loop_wait + 2*retry_timeout <= ttl rule",
+    "Warns about false demotions/instability and says to rehearse in a lab",
+    "Distinguishes graceful stop (faster) from hard kill"
+   ]
+  },
+  {
+   "id": 3,
+   "prompt": "We switched Consul to default_policy=deny and now Patroni logs 403 from Consul. DNS for master.pg-lab.service.consul also returns nothing. What's missing?",
+   "expected_output": "patroni-403-after-acl-deny",
+   "files": [],
+   "expectations": [
+    "Patroni token needs key_prefix service/ and session + service prefixes",
+    "DNS needs a default token with read on the agent",
+    "Notes tokens should be handed out before switching to deny",
+    "Does not paste a real secret value"
+   ]
+  }
+ ]
+}

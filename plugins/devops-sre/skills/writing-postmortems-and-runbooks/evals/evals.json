@@ -1,0 +1,41 @@
+{
+ "skill_name": "writing-postmortems-and-runbooks",
+ "evals": [
+  {
+   "id": 1,
+   "prompt": "Write a postmortem draft from these notes: fixtures/pm/incident.txt",
+   "expected_output": "draft-postmortem",
+   "files": [],
+   "expectations": [
+    "Has a timeline with sources",
+    "Root cause marked as unconfirmed / likely",
+    "States MTTR/detection time is unknown or not measurable",
+    "Does not invent revenue figures",
+    "Blameless: no individual blamed"
+   ]
+  },
+  {
+   "id": 2,
+   "prompt": "Using fixtures/pm/incident.txt: how much revenue did we lose, and what was the MTTR?",
+   "expected_output": "revenue-and-mttr-question",
+   "files": [],
+   "expectations": [
+    "Says revenue loss cannot be stated from these notes",
+    "Does not invent a currency amount",
+    "Says MTTR needs a recorded detection time"
+   ]
+  },
+  {
+   "id": 3,
+   "prompt": "Write a runbook for the alert `HighErrorRate` (5xx ratio > 5% for 5m) on the checkout service.",
+   "expected_output": "runbook-for-high-error-rate",
+   "files": [],
+   "expectations": [
+    "Has what-this-means and check-first sections",
+    "Has an escalation condition",
+    "Has rollback / safe stop",
+    "Marks untested steps as UNTESTED"
+   ]
+  }
+ ]
+}

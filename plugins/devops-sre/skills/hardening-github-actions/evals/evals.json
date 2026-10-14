@@ -1,0 +1,41 @@
+{
+ "skill_name": "hardening-github-actions",
+ "evals": [
+  {
+   "id": 1,
+   "prompt": "Audit this GitHub Actions workflow for security problems: fixtures/gha/ci.yml",
+   "expected_output": "audit-risky-workflow",
+   "files": [],
+   "expectations": [
+    "Flags pull_request_target combined with checking out PR head code",
+    "Flags script injection from the PR title and shows the env: fix",
+    "Recommends least-privilege `permissions:`",
+    "Recommends pinning the third-party action to a commit SHA",
+    "Recommends OIDC instead of static AWS keys"
+   ]
+  },
+  {
+   "id": 2,
+   "prompt": "Our deploy job uses AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY from repo secrets. Show me how to switch to OIDC.",
+   "expected_output": "migrate-aws-keys-to-oidc",
+   "files": [],
+   "expectations": [
+    "Uses `id-token: write`",
+    "Uses role-to-assume with configure-aws-credentials",
+    "Trust policy is scoped to the repo (sub claim)",
+    "Tells the user to delete the old static keys"
+   ]
+  },
+  {
+   "id": 3,
+   "prompt": "How do I pin all third-party actions in our workflows safely, and keep them updated?",
+   "expected_output": "pin-actions-safely",
+   "files": [],
+   "expectations": [
+    "Pin to full commit SHA with the tag in a comment",
+    "Resolves the SHA and verifies it belongs to the intended tag",
+    "Uses Dependabot for the github-actions ecosystem"
+   ]
+  }
+ ]
+}
