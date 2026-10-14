@@ -1,8 +1,9 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="devops-sre-skills" width="100%">
+  <img src="assets/banner.svg" alt="devops-skills" width="100%">
 </p>
 
 <p align="center">
+  <a href="https://github.com/rsmrtk/DevOps-Skills/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/rsmrtk/DevOps-Skills/actions/workflows/ci.yml/badge.svg"></a>
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green">
   <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-7c3aed">
   <img alt="Skills" src="https://img.shields.io/badge/skills-11-0ea5e9">
@@ -27,8 +28,8 @@ A current Claude already knows most DevOps material. What it does not reliably d
 
 ```bash
 # 1. add the marketplace and install the plugin
-claude plugin marketplace add <owner>/devops-sre-skills
-claude plugin install devops-sre@devops-sre-skills
+claude plugin marketplace add rsmrtk/DevOps-Skills
+claude plugin install devops-sre@devops-skills
 
 # 2. use a skill explicitly (most reliable) ...
 /devops-sre:reviewing-terraform-changes
@@ -40,12 +41,12 @@ claude plugin install devops-sre@devops-sre-skills
 Local install from a clone:
 
 ```bash
-git clone https://github.com/<owner>/devops-sre-skills && cd devops-sre-skills
+git clone https://github.com/rsmrtk/DevOps-Skills && cd DevOps-Skills
 claude plugin marketplace add .
-claude plugin install devops-sre@devops-sre-skills
+claude plugin install devops-sre@devops-skills
 ```
 
-> Replace `<owner>` with the GitHub account that hosts the repository.
+> The marketplace is called `devops-skills`; the plugin inside it is `devops-sre`, so skills are invoked as `/devops-sre:<skill>`.
 
 ## What is inside
 
@@ -152,7 +153,7 @@ Third-party validators that pair well with these skills (not part of this repo):
 
 ```text
 .
-├── .claude-plugin/marketplace.json     # marketplace: devops-sre-skills
+├── .claude-plugin/marketplace.json     # marketplace: devops-skills
 ├── plugins/devops-sre/
 │   ├── .claude-plugin/plugin.json      # plugin manifest
 │   ├── agents/devops-sre-engineer.md   # the agent

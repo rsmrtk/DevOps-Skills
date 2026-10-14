@@ -6,5 +6,15 @@
     "name": "Rostyslav Martyniuk"
   },
   "license": "MIT",
-  "keywords": ["devops", "sre", "terraform", "kubernetes", "finops", "ci-cd", "observability"]
+  "keywords": [
+    "devops",
+    "sre",
+    "terraform",
+    "kubernetes",
+    "finops",
+    "ci-cd",
+    "observability"
+  ],
+  "homepage": "https://github.com/rsmrtk/DevOps-Skills",
+  "repository": "https://github.com/rsmrtk/DevOps-Skills"
 }

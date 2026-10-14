@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Validate JSON manifests and evals
+        run: |
+          python - <<'PY'
+          import glob, json, sys
+          files = [".claude-plugin/marketplace.json", "plugins/devops-sre/.claude-plugin/plugin.json"] + glob.glob("plugins/devops-sre/skills/*/evals/evals.json")
+          for f in files:
+              json.load(open(f))
+          print(f"{len(files)} JSON files OK")
+          PY
+      - name: Check every skill has valid frontmatter and a short body
+        run: |
+          python - <<'PY'
+          import glob, re, sys
+          bad = 0
+          for f in sorted(glob.glob("plugins/devops-sre/skills/*/SKILL.md")):
+              t = open(f).read()
+              m = re.match(r"---\nname: ([a-z0-9-]+)\ndescription: (.+?)\n---\n", t, re.S)
+              if not m:
+                  print("BAD frontmatter:", f); bad += 1; continue
+              if len(m.group(2)) > 1024:
+                  print("description too long:", f); bad += 1
+              if t.count("\n") > 500:
+                  print("body over 500 lines:", f); bad += 1
+          sys.exit(1 if bad else 0)
+          PY
+      - name: Smoke-test the bundled analyzers
+        run: |
+          pip install pyyaml
+          S=plugins/devops-sre/skills
+          python -m py_compile $S/*/scripts/*.py
+          python $S/reviewing-cloud-iam/scripts/lint_iam_policy.py $S/reviewing-cloud-iam/evals/fixtures/bad-policies.json | tail -1 || true
+          python $S/operating-gitops/scripts/gitops_lint.py $S/operating-gitops/evals/fixtures/repo | tail -1 || true
+          cd $S/analyzing-billing-exports/evals/fixtures
+          python gen_fixture.py > /dev/null
+          python ../../scripts/analyze_billing.py cur.csv --tag Environment | grep -q "PARTIAL"
